@@ -16,7 +16,8 @@ concurrency:
 jobs:
   android:
     runs-on: ubuntu-latest
-
+    permissions:
+      contents: write
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -56,18 +57,19 @@ jobs:
 
       - name: Upload to GitHub Release
         if: (github.event_name == 'push' && github.ref == 'refs/heads/main') || github.event_name == 'workflow_dispatch'
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           files: ./dyslexia/build/app/outputs/flutter-apk/*.apk
           tag_name: flutter-apk-latest
           name: Latest Flutter APK
-          replace: true
+          overwrite_files: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-  ios:
+ios:
     runs-on: macos-latest
-
+    permissions:
+      contents: write
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -98,11 +100,11 @@ jobs:
 
       - name: Upload to GitHub Release
         if: (github.event_name == 'push' && github.ref == 'refs/heads/main') || github.event_name == 'workflow_dispatch'
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           files: ./dyslexia/build/ios/**
           tag_name: flutter-apk-latest
           name: Latest Flutter iOS Build
-          replace: true
+          overwrite_files: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
