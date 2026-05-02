@@ -93,14 +93,23 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: dyslexia-ios-build
-          path: ./dyslexia/build/ios/
+          path: |
+            ./dyslexia/build/ios/iphones/Build/Products/Debug-iphoneos/Runner.app/
+            ./dyslexia/build/ios/iphones/Build/Products/Debug-iphoneos/Runner.framework/
+            ./dyslexia/build/ios/iphones/Build/Products/Debug-iphoneos/Assets.car
+            ./dyslexia/build/ios/iphones/Build/Products/Debug-iphoneos/App.framework/
           retention-days: 7
 
       - name: Upload to GitHub Release
         if: (github.event_name == 'push' && github.ref == 'refs/heads/main') || github.event_name == 'workflow_dispatch'
         uses: softprops/action-gh-release@v3
         with:
-          files: ./dyslexia/build/ios/**
+          files: |
+            ./dyslexia/build/app/outputs/flutter-apk/*.apk
+            ./dyslexia/build/ios/iphones/Build/Products/Debug-iphoneos/Runner.app
+            ./dyslexia/build/ios/iphones/Build/Products/Debug-iphoneos/Assets.car
+            ./dyslexia/build/ios/iphones/Build/Products/Debug-iphoneos/App.framework
+            ./dyslexia/build/ios/iphones/Build/Products/Debug-iphoneos/Flutter.framework
           tag_name: flutter-apk-latest
-          name: Latest Flutter iOS Build
+          name: Latest Flutter Build
           overwrite_files: true
