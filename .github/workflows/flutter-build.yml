@@ -1,0 +1,104 @@
+name: Flutter Build
+
+on:
+  push:
+    paths:
+      - 'dyslexia/**'
+  pull_request:
+    paths:
+      - 'dyslexia/**'
+  workflow_dispatch:
+
+concurrency:
+  group: flutter-apk-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  android:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'oracle'
+          java-version: '17'
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+
+      - name: Install dependencies
+        working-directory: ./dyslexia
+        run: flutter pub get
+
+      - name: Build all Android APKs
+        working-directory: ./dyslexia
+        run: |
+          flutter build apk --debug --target-platform android-arm
+          flutter build apk --debug --target-platform android-arm64
+          flutter build apk --debug --target-platform android-x64
+
+      - name: Upload Android APKs
+        uses: actions/upload-artifact@v4
+        with:
+          name: dyslexia-android-apks
+          path: |
+            ./dyslexia/build/app/outputs/flutter-apk/app-android-arm-debug.apk
+            ./dyslexia/build/app/outputs/flutter-apk/app-android-arm64-debug.apk
+            ./dyslexia/build/app/outputs/flutter-apk/app-android-x64-debug.apk
+          retention-days: 7
+
+      - name: Upload to GitHub Release
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            ./dyslexia/build/app/outputs/flutter-apk/app-android-arm-debug.apk
+            ./dyslexia/build/app/outputs/flutter-apk/app-android-arm64-debug.apk
+            ./dyslexia/build/app/outputs/flutter-apk/app-android-x64-debug.apk
+          tag_name: flutter-apk-latest
+          release_name: Latest Flutter APK
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  ios:
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+
+      - name: Install dependencies
+        working-directory: ./dyslexia
+        run: flutter pub get
+
+      - name: Build iOS
+        working-directory: ./dyslexia
+        run: flutter build ios --debug --no-codesign
+
+      - name: Upload iOS build
+        uses: actions/upload-artifact@v4
+        with:
+          name: dyslexia-ios-build
+          path: ./dyslexia/build/ios/iphoneos/Build/Products/Debug
+          retention-days: 7
+
+      - name: Upload to GitHub Release
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: softprops/action-gh-release@v1
+        with:
+          files: ./dyslexia/build/ios/iphoneos/Build/Products/Debug/*
+          tag_name: flutter-apk-latest
+          release_name: Latest Flutter APK (iOS)
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
