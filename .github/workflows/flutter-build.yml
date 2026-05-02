@@ -39,18 +39,18 @@ jobs:
       - name: Build all Android APKs
         working-directory: ./dyslexia
         run: |
-          flutter build apk --debug --target-platform android-arm --output ./build/app/outputs/flutter-apk/app-arm-debug.apk
-          flutter build apk --debug --target-platform android-arm64 --output ./build/app/outputs/flutter-apk/app-arm64-debug.apk
-          flutter build apk --debug --target-platform android-x64 --output ./build/app/outputs/flutter-apk/app-x64-debug.apk
+          flutter build apk --debug --target-platform android-arm
+          flutter build apk --debug --target-platform android-arm64
+          flutter build apk --debug --target-platform android-x64
 
       - name: Upload Android APKs
         uses: actions/upload-artifact@v4
         with:
           name: dyslexia-android-apks
           path: |
-            ./dyslexia/build/app/outputs/flutter-apk/app-arm-debug.apk
-            ./dyslexia/build/app/outputs/flutter-apk/app-arm64-debug.apk
-            ./dyslexia/build/app/outputs/flutter-apk/app-x64-debug.apk
+            ./dyslexia/build/app/outputs/flutter-apk/app-armeabi-v7a-debug.apk
+            ./dyslexia/build/app/outputs/flutter-apk/app-arm64-v8a-debug.apk
+            ./dyslexia/build/app/outputs/flutter-apk/app-x86_64-debug.apk
           retention-days: 7
 
       - name: Upload to GitHub Release
@@ -58,9 +58,9 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           files: |
-            ./dyslexia/build/app/outputs/flutter-apk/app-arm-debug.apk
-            ./dyslexia/build/app/outputs/flutter-apk/app-arm64-debug.apk
-            ./dyslexia/build/app/outputs/flutter-apk/app-x64-debug.apk
+            ./dyslexia/build/app/outputs/flutter-apk/app-armeabi-v7a-debug.apk
+            ./dyslexia/build/app/outputs/flutter-apk/app-arm64-v8a-debug.apk
+            ./dyslexia/build/app/outputs/flutter-apk/app-x86_64-debug.apk
           tag_name: flutter-apk-latest
           release_name: Latest Flutter APK
         env:
