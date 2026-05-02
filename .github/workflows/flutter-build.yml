@@ -60,7 +60,6 @@ jobs:
         with:
           files: ./dyslexia/build/app/outputs/flutter-apk/*.apk
           tag_name: flutter-apk-latest
-          release_name: Latest Flutter APK
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -101,6 +100,5 @@ jobs:
         with:
           files: ./dyslexia/build/ios/**
           tag_name: flutter-apk-latest
-          release_name: Latest Flutter APK (iOS)
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
